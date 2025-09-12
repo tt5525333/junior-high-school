@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>國中班級經營 × 高效教學資源專區</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', 'Noto Sans TC', sans-serif; background-color: #F9FAFB; }
+        .card { background-color: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; cursor: pointer; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1); }
+        .keyword-tag { background-color: #FFFFFF; color: #004097; font-size: 0.75rem; padding: 3px 9px; border-radius: 6px; font-weight: 500; border: 1px solid #D1D5DB; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        .content-fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-button { padding: 8px 12px; border-bottom: 3px solid transparent; font-weight: 500; color: #6B7280; transition: all 0.2s ease; cursor: pointer; white-space: nowrap; }
+        .tab-button:hover { color: #1C2271; border-bottom-color: #D1D5DB; }
+        .tab-button.active { color: #1C2271; border-bottom-color: #1C2271; font-weight: 600; }
+        .checklist-list { list-style-type: none; padding-left: 0; }
+        .checklist-item { display: flex; align-items: center; padding: 10px 4px; border-bottom: 1px solid #F3F4F6; }
+        .checklist-item:last-child { border-bottom: none; }
+        .checklist-icon { flex-shrink: 0; width: 28px; height: 28px; margin-right: 12px; color: #004098; }
+        
+        /* Skeleton Loader */
+        .skeleton-card { background-color: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); overflow: hidden; }
+        .skeleton-img { background-color: #e5e7eb; aspect-ratio: 16/9; }
+        .skeleton-text { background-color: #e5e7eb; height: 1.25rem; border-radius: 0.25rem; margin-bottom: 0.75rem; }
+        .skeleton-text-sm { height: 0.875rem; }
+        .skeleton-text-xs { height: 0.75rem; width: 50%; }
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 50% { opacity: .5; } }
+
+        /* Pagination */
+        #pagination-container button { min-width: 40px; height: 40px; padding: 0 12px; border: 1px solid #D1D5DB; background-color: white; border-radius: 8px; font-weight: 500; color: #374151; transition: all 0.2s ease; }
+        #pagination-container button:hover:not(:disabled) { background-color: #F3F4F6; border-color: #9CA3AF; }
+        #pagination-container button.active { background-color: #1C2271; color: white; border-color: #1C2271; font-weight: 600; cursor: default; }
+        #pagination-container button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pagination-dots { display: flex; align-items: center; justify-content: center; min-width: 40px; height: 40px; color: #6B7280; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header Section -->
+    <header class="text-center py-16 md:py-20" style="background: linear-gradient(135deg, #E0F7FA 0%, #F5F5F5 50%, #E8EAF6 100%);">
+        <div class="inline-block px-4 py-1.5 bg-[#1C2271] text-white text-sm font-semibold rounded-full mb-4">
+            國中教師的工具箱
+        </div>
+        <h1 class="text-3xl md:text-5xl font-bold text-[#1C2271]">國中班級經營 × 高效教學資源專區</h1>
+        <p class="mt-2 md:mt-4 text-lg md:text-xl text-gray-700">專為國中老師打造，有效解決教學現場大小事。</p>
+    </header>
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <!-- Controls Section -->
+        <div class="mb-8 p-6 bg-white rounded-xl shadow-md">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Keyword Search -->
+                <div>
+                    <label for="search-input" class="block text-sm font-medium text-gray-700 mb-2">關鍵字搜尋</label>
+                    <div class="relative">
+                        <input type="text" id="search-input" placeholder="輸入關鍵字搜尋標題、摘要、內文..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#004098] focus:border-[#004098] transition">
+                        <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                    </div>
+                </div>
+                <!-- Filter by Keyword -->
+                <div>
+                    <label for="filter-select" class="block text-sm font-medium text-gray-700 mb-2">標籤篩選</label>
+                    <select id="filter-select" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#004098] focus:border-[#004098] transition bg-white">
+                        <option value="all">所有標籤</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist Section -->
+        <div id="checklist-section" class="mb-8 p-6 bg-white rounded-xl shadow-md">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">學期行事曆重點任務</h3>
+            <div class="border-b border-gray-200">
+                <nav id="checklist-tabs" class="-mb-px flex space-x-2 md:space-x-6 overflow-x-auto" aria-label="Tabs">
+                    <button data-tab="all" class="tab-button active">全部</button>
+                    <button data-tab="start-school" class="tab-button">開學</button>
+                    <button data-tab="mid-term" class="tab-button">期中</button>
+                    <button data-tab="finals" class="tab-button">期末</button>
+                    <button data-tab="vacation" class="tab-button">寒暑假</button>
+                    <button data-tab="cap-exam" class="tab-button">國中會考</button>
+                </nav>
+            </div>
+            <div id="checklist-content" class="mt-4 min-h-[150px]">
+                <p class="text-gray-500 p-4">重點任務載入中...</p>
+            </div>
+        </div>
+        
+        <!-- No Results Message -->
+        <div id="no-results" class="hidden text-center py-16">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-semibold text-gray-900">找不到結果</h3>
+            <p class="mt-1 text-sm text-gray-500">請嘗試使用不同的關鍵字或篩選條件。</p>
+        </div>
+        
+        <!-- Articles Grid -->
+        <main id="card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Skeletons or Cards will be rendered here -->
+        </main>
+
+        <!-- Pagination -->
+        <div id="pagination-container" class="flex justify-center items-center flex-wrap gap-2 mt-12"></div>
+
+    </div>
+
+<script>
+    const cardContainer = document.getElementById('card-container');
+    const searchInput = document.getElementById('search-input');
+    const filterSelect = document.getElementById('filter-select');
+    const noResultsDiv = document.getElementById('no-results');
+    const checklistTabs = document.getElementById('checklist-tabs');
+    const checklistContent = document.getElementById('checklist-content');
+    const paginationContainer = document.getElementById('pagination-container');
+
+    const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwEt2gRcaihTRVMzntDpwpM0yyfAJAYCgQmimbX9mGhZfFZr6NLO9qdEiVTVDTLeRLttw/exec';
+
+    let allArticleData = [];
+    let allChecklistData = {};
+    let currentPage = 1;
+    const articlesPerPage = 12;
+
+    /**
+     * Renders skeleton placeholders while data is loading.
+     * @param {number} count - The number of skeletons to render.
+     */
+    function renderSkeletons(count) {
+        cardContainer.innerHTML = '';
+        noResultsDiv.style.display = 'none';
+        for (let i = 0; i < count; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton-card';
+            skeleton.innerHTML = `
+                <div class="skeleton-img animate-pulse"></div>
+                <div class="p-6">
+                    <div class="skeleton-text animate-pulse w-3/4"></div>
+                    <div class="skeleton-text animate-pulse skeleton-text-sm"></div>
+                    <div class="skeleton-text animate-pulse skeleton-text-sm w-5/6"></div>
+                    <div class="pt-4 mt-auto">
+                       <div class="mt-8 flex justify-between">
+                            <div class="skeleton-text animate-pulse skeleton-text-xs"></div>
+                            <div class="skeleton-text animate-pulse skeleton-text-xs"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            cardContainer.appendChild(skeleton);
+        }
+    }
+
+    /**
+     * Renders the article cards to the page.
+     * @param {Array} articles - An array of article objects to render.
+     */
+    function renderCards(articles) {
+        cardContainer.innerHTML = '';
+        noResultsDiv.style.display = articles.length === 0 ? 'block' : 'none';
+
+        articles.forEach(article => {
+            const keywordsHtml = (article.keywords || []).map(kw => `<span class="keyword-tag">${kw}</span>`).join(' ');
+
+            let imageBlock = '';
+            if (article.imageUrl) {
+                const ratio = (article.imageRatio === '1:1') ? '1/1' : '16/9';
+                imageBlock = `<div class="w-full aspect-[${ratio}] bg-gray-100 overflow-hidden"><img src="${article.imageUrl}" alt="${article.title}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'"></div>`;
+            }
+
+            let buttonText = '閱讀全文';
+            if (article.buttonType === 'download') {
+                buttonText = '下載資源';
+            } else if (article.buttonType === 'special_section') {
+                buttonText = '前往專區';
+            } else if (article.buttonType === 'video') {
+                buttonText = '回看影音';
+            }
+
+            const card = document.createElement('div');
+            card.className = 'card fade-in flex flex-col';
+            card.innerHTML = imageBlock + `<div class="p-6 flex flex-col flex-grow"><div class="flex-grow"><h2 class="text-xl font-bold mb-2 text-gray-900">${article.title}</h2><p class="text-gray-600 mb-4 text-sm leading-relaxed">${article.summary}</p></div><div class="pt-4 mt-auto"><div class="flex flex-wrap gap-2 mb-4">${keywordsHtml}</div><div class="flex justify-between items-center text-xs text-gray-500"><span>作者：${article.author}</span><span>發布於：${article.publishDate}</span></div><div class="text-right mt-4"><a href="${article.url}" target="_blank" rel="noopener noreferrer" class="inline-block px-4 py-2 bg-[#1C2271] text-white rounded-lg hover:bg-[#004098] transition duration-300 font-semibold">${buttonText}</a></div></div></div>`;
+
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('a')) return;
+                window.open(article.url, '_blank', 'noopener,noreferrer');
+            });
+
+            cardContainer.appendChild(card);
+        });
+    }
+
+    /**
+     * Renders the pagination controls.
+     * @param {number} totalItems - The total number of items to paginate.
+     */
+    function renderPagination(totalItems) {
+        paginationContainer.innerHTML = '';
+        const totalPages = Math.ceil(totalItems / articlesPerPage);
+        if (totalPages <= 1) return;
+
+        const createButton = (page, text = page, isDisabled = false) => {
+            const button = document.createElement('button');
+            button.dataset.page = page;
+            button.textContent = text;
+            if (page === currentPage) button.className = 'active';
+            if (isDisabled) button.disabled = true;
+            return button;
+        };
+
+        const createDots = () => {
+            const span = document.createElement('span');
+            span.className = 'pagination-dots';
+            span.textContent = '...';
+            return span;
+        };
+        
+        paginationContainer.appendChild(createButton(currentPage - 1, '‹', currentPage === 1));
+
+        const pagesToShow = new Set();
+        pagesToShow.add(1);
+        if (totalPages > 1) pagesToShow.add(2);
+        if (totalPages > 2) pagesToShow.add(totalPages - 1);
+        if (totalPages > 3) pagesToShow.add(totalPages);
+        pagesToShow.add(currentPage);
+        if (currentPage > 1) pagesToShow.add(currentPage - 1);
+        if (currentPage < totalPages) pagesToShow.add(currentPage + 1);
+
+        let lastPage = 0;
+        Array.from(pagesToShow).sort((a, b) => a - b).forEach(page => {
+            if (page > 0 && page <= totalPages) {
+                if (page > lastPage + 1) paginationContainer.appendChild(createDots());
+                paginationContainer.appendChild(createButton(page));
+                lastPage = page;
+            }
+        });
+        
+        paginationContainer.appendChild(createButton(currentPage + 1, '›', currentPage === totalPages));
+    }
+
+    /**
+     * Renders the checklist items for a given tab.
+     * @param {string} tabId - The ID of the checklist tab to display.
+     */
+    function renderChecklist(tabId) {
+        const items = allChecklistData[tabId] || [];
+        let contentHtml;
+        if (items.length === 0) {
+            contentHtml = `<p class="text-gray-500 p-4">此區間尚無重點任務。</p>`;
+        } else {
+            const itemList = items.map(item => `<li class="checklist-item"><svg class="checklist-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg><span class="text-gray-700">${item.event}</span></li>`).join('');
+            contentHtml = `<ul class="checklist-list">${itemList}</ul>`;
+        }
+        checklistContent.innerHTML = `<div class="content-fade-in">${contentHtml}</div>`;
+    }
+
+    /**
+     * Populates the keyword filter dropdown with unique keywords from articles.
+     * @param {Array} articles - An array of article objects.
+     */
+    function populateFilter(articles) {
+        const allKeywords = new Set();
+        articles.forEach(article => (article.keywords || []).forEach(kw => allKeywords.add(kw)));
+        filterSelect.innerHTML = '<option value="all">所有標籤</option>';
+        Array.from(allKeywords).sort().forEach(kw => {
+            const option = document.createElement('option');
+            option.value = kw;
+            option.textContent = kw;
+            filterSelect.appendChild(option);
+        });
+    }
+
+    /**
+     * Filters and sorts the articles based on the current UI controls.
+     * @returns {Array} The filtered and sorted array of articles.
+     */
+    function filterAndSortArticles() {
+        const activeTab = checklistTabs.querySelector('.active');
+        const activePeriod = activeTab ? activeTab.dataset.tab : 'all';
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedKeyword = filterSelect.value;
+
+        let filteredArticles = allArticleData;
+
+        if (activePeriod !== 'all') {
+            filteredArticles = filteredArticles.filter(article => (article.period || '').toLowerCase() === activePeriod);
+        }
+
+        if (selectedKeyword !== 'all') {
+            filteredArticles = filteredArticles.filter(article => (article.keywords || []).includes(selectedKeyword));
+        }
+        
+        if (searchTerm) {
+            filteredArticles = filteredArticles.filter(article => 
+                (article.title || '').toLowerCase().includes(searchTerm) ||
+                (article.summary || '').toLowerCase().includes(searchTerm) ||
+                (article.author || '').toLowerCase().includes(searchTerm) ||
+                (article.keywords || []).some(kw => kw.toLowerCase().includes(searchTerm)) ||
+                (article.fullText || '').toLowerCase().includes(searchTerm)
+            );
+        }
+
+        filteredArticles.sort((a, b) => {
+            if (activePeriod === 'cap-exam') {
+                const aIsSpecial = a.buttonType === 'special_section';
+                const bIsSpecial = b.buttonType === 'special_section';
+                if (aIsSpecial !== bIsSpecial) return bIsSpecial - aIsSpecial;
+            }
+
+            if (searchTerm) {
+                const aIsDownload = a.buttonType === 'download';
+                const bIsDownload = b.buttonType === 'download';
+                if (aIsDownload !== bIsDownload) return bIsDownload - aIsDownload;
+                
+                const getScore = (article) => {
+                    if ((article.title || '').toLowerCase().includes(searchTerm)) return 4;
+                    if ((article.summary || '').toLowerCase().includes(searchTerm)) return 3;
+                    if ((article.keywords || []).some(kw => kw.toLowerCase().includes(searchTerm))) return 2;
+                    if ((article.fullText || '').toLowerCase().includes(searchTerm)) return 1;
+                    return 0;
+                };
+                const scoreA = getScore(a);
+                const scoreB = getScore(b);
+                if (scoreA !== scoreB) return scoreB - scoreA;
+            }
+            
+            return new Date(b.publishDate) - new Date(a.publishDate);
+        });
+        
+        return filteredArticles;
+    }
+    
+    /**
+     * Filters articles, then renders the current page of cards and pagination.
+     */
+    function updateDisplay() {
+        const filteredArticles = filterAndSortArticles();
+        const totalItems = filteredArticles.length;
+        const startIndex = (currentPage - 1) * articlesPerPage;
+        const endIndex = startIndex + articlesPerPage;
+        const paginatedArticles = filteredArticles.slice(startIndex, endIndex);
+        renderCards(paginatedArticles);
+        renderPagination(totalItems);
+    }
+
+    /**
+     * Debounce utility to limit the rate at which a function gets called.
+     * @param {Function} func The function to debounce.
+     * @param {number} delay The delay in milliseconds.
+     * @returns {Function} The debounced function.
+     */
+    function debounce(func, delay) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
+    // Main application logic starts here
+    document.addEventListener('DOMContentLoaded', () => {
+        renderSkeletons(12);
+
+        fetch(GOOGLE_SHEET_API_URL)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                allArticleData = data.articles || [];
+                allChecklistData = data.checklists || {};
+                
+                populateFilter(allArticleData);
+                renderChecklist('all'); 
+                currentPage = 1;
+                updateDisplay(); 
+
+                // Setup event listeners
+                checklistTabs.addEventListener('click', (e) => {
+                    if (e.target.matches('.tab-button')) {
+                        checklistTabs.querySelector('.active').classList.remove('active');
+                        e.target.classList.add('active');
+                        renderChecklist(e.target.dataset.tab);
+                        currentPage = 1;
+                        updateDisplay();
+                    }
+                });
+
+                const debouncedUpdate = debounce(() => {
+                    currentPage = 1;
+                    updateDisplay();
+                }, 300);
+                searchInput.addEventListener('input', debouncedUpdate);
+
+                filterSelect.addEventListener('change', () => {
+                    currentPage = 1;
+                    updateDisplay();
+                });
+
+                paginationContainer.addEventListener('click', (e) => {
+                    const target = e.target.closest('button');
+                    if (!target || target.disabled || target.classList.contains('active')) return;
+
+                    const page = parseInt(target.dataset.page, 10);
+                    currentPage = page;
+                    updateDisplay();
+                    cardContainer.scrollIntoView({ behavior: 'smooth' });
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                cardContainer.innerHTML = `<p class="text-center col-span-full text-red-600">資料載入失敗，請檢查網路連線或聯繫管理員。</p>`;
+                checklistContent.innerHTML = `<p class="text-center text-red-600">任務載入失敗。</p>`
+            });
+    });
+</script>
+</body>
+</html>
+
