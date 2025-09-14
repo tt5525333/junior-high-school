@@ -12,7 +12,8 @@
         body { font-family: 'Inter', 'Noto Sans TC', sans-serif; background-color: #F9FAFB; }
         .card { background-color: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; cursor: pointer; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1); }
-        .keyword-tag { background-color: #FFFFFF; color: #004097; font-size: 0.75rem; padding: 3px 9px; border-radius: 6px; font-weight: 500; border: 1px solid #D1D5DB; }
+        .keyword-tag { background-color: #FFFFFF; color: #004097; font-size: 0.75rem; padding: 3px 9px; border-radius: 6px; font-weight: 500; border: 1px solid #D1D5DB; cursor: pointer; transition: all 0.2s ease; }
+        .keyword-tag:hover { background-color: #f0f9ff; border-color: #93c5fd; }
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
         .content-fade-in { animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -166,7 +167,7 @@
         noResultsDiv.style.display = articles.length === 0 ? 'block' : 'none';
 
         articles.forEach(article => {
-            const keywordsHtml = (article.keywords || []).map(kw => `<span class="keyword-tag">${kw}</span>`).join(' ');
+            const keywordsHtml = (article.keywords || []).map(kw => `<button data-keyword="${kw}" class="keyword-tag">${kw}</button>`).join(' ');
 
             let imageBlock = '';
             if (article.imageUrl) {
@@ -188,7 +189,7 @@
             card.innerHTML = imageBlock + `<div class="p-6 flex flex-col flex-grow"><div class="flex-grow"><h2 class="text-xl font-bold mb-2 text-gray-900">${article.title}</h2><p class="text-gray-600 mb-4 text-sm leading-relaxed">${article.summary}</p></div><div class="pt-4 mt-auto"><div class="flex flex-wrap gap-2 mb-4">${keywordsHtml}</div><div class="flex justify-between items-center text-xs text-gray-500"><span>作者：${article.author}</span><span>發布於：${article.publishDate}</span></div><div class="text-right mt-4"><a href="${article.url}" target="_blank" rel="noopener noreferrer" class="inline-block px-4 py-2 bg-[#1C2271] text-white rounded-lg hover:bg-[#004098] transition duration-300 font-semibold">${buttonText}</a></div></div></div>`;
 
             card.addEventListener('click', (e) => {
-                if (e.target.closest('a')) return;
+                if (e.target.closest('a') || e.target.closest('button.keyword-tag')) return;
                 window.open(article.url, '_blank', 'noopener,noreferrer');
             });
 
@@ -412,6 +413,21 @@
                     updateDisplay();
                     cardContainer.scrollIntoView({ behavior: 'smooth' });
                 });
+
+                // Add event listener for keyword tags
+                cardContainer.addEventListener('click', (e) => {
+                    const keywordTag = e.target.closest('button.keyword-tag');
+                    if (!keywordTag) return;
+
+                    const keyword = keywordTag.dataset.keyword;
+                    // Only filter if the keyword exists and is not already selected
+                    if (keyword && filterSelect.value !== keyword) {
+                        filterSelect.value = keyword;
+                        currentPage = 1;
+                        updateDisplay();
+                        document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -422,6 +438,4 @@
 </script>
 </body>
 </html>
-
-
 
