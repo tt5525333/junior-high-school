@@ -91,7 +91,13 @@
                 </nav>
             </div>
             <div id="checklist-content" class="mt-4 min-h-[150px]">
-                <p class="text-gray-500 p-4">重點任務載入中...</p>
+                <div id="checklist-loader" class="p-4 flex flex-col items-start justify-center w-full">
+                    <p class="text-gray-600 mb-3">重點任務載入中...</p>
+                    <div class="w-full max-w-xs bg-gray-200 rounded-full h-2.5">
+                        <div id="checklist-progress-bar" class="bg-[#1C2271] h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+                    </div>
+                    <p id="checklist-progress-text" class="text-sm text-gray-500 mt-2">0%</p>
+                </div>
             </div>
         </div>
         
@@ -368,68 +374,87 @@
     document.addEventListener('DOMContentLoaded', () => {
         renderSkeletons(12);
 
+        const checklistProgressBar = document.getElementById('checklist-progress-bar');
+        const checklistProgressText = document.getElementById('checklist-progress-text');
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.floor(Math.random() * 5) + 1;
+            if (progress >= 95) {
+                progress = 95;
+                clearInterval(progressInterval);
+            }
+            if(checklistProgressBar) checklistProgressBar.style.width = progress + '%';
+            if(checklistProgressText) checklistProgressText.textContent = progress + '%';
+        }, 120);
+
         fetch(GOOGLE_SHEET_API_URL)
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
                 return response.json();
             })
             .then(data => {
-                allArticleData = data.articles || [];
-                allChecklistData = data.checklists || {};
-                
-                populateFilter(allArticleData);
-                renderChecklist('all'); 
-                currentPage = 1;
-                updateDisplay(); 
+                clearInterval(progressInterval);
+                if(checklistProgressBar) checklistProgressBar.style.width = '100%';
+                if(checklistProgressText) checklistProgressText.textContent = '100%';
 
-                // Setup event listeners
-                checklistTabs.addEventListener('click', (e) => {
-                    if (e.target.matches('.tab-button')) {
-                        checklistTabs.querySelector('.active').classList.remove('active');
-                        e.target.classList.add('active');
-                        renderChecklist(e.target.dataset.tab);
+                setTimeout(() => {
+                    allArticleData = data.articles || [];
+                    allChecklistData = data.checklists || {};
+                    
+                    populateFilter(allArticleData);
+                    renderChecklist('all'); 
+                    currentPage = 1;
+                    updateDisplay(); 
+
+                    // Setup event listeners
+                    checklistTabs.addEventListener('click', (e) => {
+                        if (e.target.matches('.tab-button')) {
+                            checklistTabs.querySelector('.active').classList.remove('active');
+                            e.target.classList.add('active');
+                            renderChecklist(e.target.dataset.tab);
+                            currentPage = 1;
+                            updateDisplay();
+                        }
+                    });
+
+                    const debouncedUpdate = debounce(() => {
                         currentPage = 1;
                         updateDisplay();
-                    }
-                });
+                    }, 300);
+                    searchInput.addEventListener('input', debouncedUpdate);
 
-                const debouncedUpdate = debounce(() => {
-                    currentPage = 1;
-                    updateDisplay();
-                }, 300);
-                searchInput.addEventListener('input', debouncedUpdate);
-
-                filterSelect.addEventListener('change', () => {
-                    currentPage = 1;
-                    updateDisplay();
-                });
-
-                paginationContainer.addEventListener('click', (e) => {
-                    const target = e.target.closest('button');
-                    if (!target || target.disabled || target.classList.contains('active')) return;
-
-                    const page = parseInt(target.dataset.page, 10);
-                    currentPage = page;
-                    updateDisplay();
-                    cardContainer.scrollIntoView({ behavior: 'smooth' });
-                });
-
-                // Add event listener for keyword tags
-                cardContainer.addEventListener('click', (e) => {
-                    const keywordTag = e.target.closest('button.keyword-tag');
-                    if (!keywordTag) return;
-
-                    const keyword = keywordTag.dataset.keyword;
-                    // Only filter if the keyword exists and is not already selected
-                    if (keyword && filterSelect.value !== keyword) {
-                        filterSelect.value = keyword;
+                    filterSelect.addEventListener('change', () => {
                         currentPage = 1;
                         updateDisplay();
-                        document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
-                    }
-                });
+                    });
+
+                    paginationContainer.addEventListener('click', (e) => {
+                        const target = e.target.closest('button');
+                        if (!target || target.disabled || target.classList.contains('active')) return;
+
+                        const page = parseInt(target.dataset.page, 10);
+                        currentPage = page;
+                        updateDisplay();
+                        cardContainer.scrollIntoView({ behavior: 'smooth' });
+                    });
+
+                    // Add event listener for keyword tags
+                    cardContainer.addEventListener('click', (e) => {
+                        const keywordTag = e.target.closest('button.keyword-tag');
+                        if (!keywordTag) return;
+
+                        const keyword = keywordTag.dataset.keyword;
+                        if (keyword && filterSelect.value !== keyword) {
+                            filterSelect.value = keyword;
+                            currentPage = 1;
+                            updateDisplay();
+                            document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                }, 400); 
             })
             .catch(error => {
+                clearInterval(progressInterval);
                 console.error('Error fetching data:', error);
                 cardContainer.innerHTML = `<p class="text-center col-span-full text-red-600">資料載入失敗，請檢查網路連線或聯繫管理員。</p>`;
                 checklistContent.innerHTML = `<p class="text-center text-red-600">任務載入失敗。</p>`
@@ -438,4 +463,5 @@
 </script>
 </body>
 </html>
+
 
