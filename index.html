@@ -40,45 +40,114 @@
         #pagination-container button.active { background-color: #1C2271; color: white; border-color: #1C2271; font-weight: 600; cursor: default; }
         #pagination-container button:disabled { opacity: 0.5; cursor: not-allowed; }
         .pagination-dots { display: flex; align-items: center; justify-content: center; min-width: 40px; height: 40px; color: #6B7280; }
+        
+        /* Hot Keywords */
+        .hot-keyword-tag {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #1C2271;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s ease, text-decoration 0.2s ease;
+        }
+        .hot-keyword-tag:hover { color: #004098; text-decoration: underline; }
+
+        /* Mega Menu */
+        .mega-menu-item {
+            border-bottom: 4px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+        .mega-menu-item.active, .mega-menu-item:hover {
+            color: #1C2271;
+            border-bottom-color: #1C2271;
+        }
+        .mega-menu-item.active svg {
+            transform: rotate(180deg);
+        }
+        .mega-menu-pane {
+            animation: slideDown 0.3s ease-in-out forwards;
+            transform-origin: top;
+            display: none; /* Initially hidden */
+        }
+        .mega-menu-pane.active {
+            display: block; /* Show active pane */
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .mega-menu-tag {
+            background-color: transparent;
+            color: #374151;
+            transition: color 0.2s ease, text-decoration 0.2s ease;
+        }
+        .mega-menu-tag:hover {
+            color: #004098;
+            text-decoration: underline;
+        }
+        /* Content Type Filter */
+        .content-filter-button {
+            padding-bottom: 8px;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #6B7280;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .content-filter-button:hover {
+            color: #1C2271;
+        }
+        .content-filter-button.active {
+            color: #1C2271;
+            border-bottom-color: #1C2271;
+        }
     </style>
 </head>
 <body class="text-gray-800">
 
     <!-- Header Section -->
-    <header class="text-center py-10 md:py-12" style="background: linear-gradient(135deg, #E0F7FA 0%, #F5F5F5 50%, #E8EAF6 100%);">
+    <header class="text-center pt-10 md:pt-12 pb-6 md:pb-8" style="background: linear-gradient(135deg, #E0F7FA 0%, #F5F5F5 50%, #E8EAF6 100%);">
         <div class="inline-block px-4 py-1.5 bg-[#1C2271] text-white text-sm font-semibold rounded-full mb-4">
             國中教師的工具箱
         </div>
         <h1 class="text-3xl md:text-5xl font-bold text-[#1C2271]">國中班級經營 × 高效教學資源專區</h1>
         <p class="mt-2 md:mt-4 text-lg md:text-xl text-gray-700">專為國中老師打造，有效解決教學現場大小事。</p>
-    </header>
 
-    <div class="container mx-auto px-4 py-8 md:py-12">
         <!-- Controls Section -->
-        <div class="mb-8 p-6 bg-white rounded-xl shadow-md">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Keyword Search -->
-                <div>
-                    <label for="search-input" class="block text-sm font-medium text-gray-700 mb-2">關鍵字搜尋</label>
-                    <div class="relative">
-                        <input type="text" id="search-input" placeholder="輸入關鍵字" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#004098] focus:border-[#004098] transition">
-                        <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                        </svg>
-                    </div>
-                </div>
-                <!-- Filter by Keyword -->
-                <div>
-                    <label for="filter-select" class="block text-sm font-medium text-gray-700 mb-2">標籤篩選</label>
-                    <select id="filter-select" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#004098] focus:border-[#004098] transition bg-white">
-                        <option value="all">所有標籤</option>
-                    </select>
-                </div>
+        <div class="mt-8 max-w-md mx-auto px-4">
+            <div class="relative">
+                <input type="text" id="search-input" placeholder="輸入關鍵字" class="w-full px-4 py-3 pr-12 border-gray-200 rounded-lg shadow-md focus:ring-2 focus:ring-[#004098] focus:border-[#004098] transition">
+                <button id="search-button" class="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 hover:text-[#004098] transition-colors" aria-label="搜尋">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </button>
+            </div>
+            <div id="hot-keywords-container" class="mt-4 flex items-center justify-center gap-x-3 flex-nowrap px-2">
+                <span class="text-sm font-medium text-gray-600 shrink-0">熱門關鍵字：</span>
+                <button class="hot-keyword-tag">SEL</button>
+                <button class="hot-keyword-tag">國中會考</button>
+                <button class="hot-keyword-tag">班級經營</button>
+                <button class="hot-keyword-tag">親師溝通</button>
             </div>
         </div>
+    </header>
 
+    <!-- Mega Menu Section -->
+    <div id="mega-menu-container" class="sticky top-0 bg-white shadow-md z-40">
+        <!-- Main menu items will be injected here -->
+        <nav id="mega-menu-nav" class="container mx-auto flex justify-center border-b border-gray-200"></nav>
+        <!-- Dropdown panes will be injected here -->
+        <div id="mega-menu-panes-container" class="relative"></div>
+    </div>
+
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
         <!-- Checklist Section -->
-        <div id="checklist-section" class="mb-8 p-6 bg-white rounded-xl shadow-md">
+        <div id="checklist-section" class="mb-8 p-6 bg-white rounded-xl shadow-md" style="display: none;">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">學期行事曆重點任務</h3>
             <div class="border-b border-gray-200">
                 <nav id="checklist-tabs" class="-mb-px flex space-x-2 md:space-x-6 overflow-x-auto" aria-label="Tabs">
@@ -99,6 +168,15 @@
                     <p id="checklist-progress-text" class="text-sm text-gray-500 mt-2">0%</p>
                 </div>
             </div>
+        </div>
+
+        <!-- Content Type Filter -->
+        <div id="content-type-filter" class="mb-8 border-b border-gray-200">
+            <nav class="flex space-x-6" aria-label="篩選內容類型">
+                <button data-type="all" class="content-filter-button active">全部內容</button>
+                <button data-type="article" class="content-filter-button">文章</button>
+                <button data-type="resource" class="content-filter-button">資源</button>
+            </nav>
         </div>
         
         <!-- No Results Message -->
@@ -123,18 +201,94 @@
 <script>
     const cardContainer = document.getElementById('card-container');
     const searchInput = document.getElementById('search-input');
-    const filterSelect = document.getElementById('filter-select');
+    const searchButton = document.getElementById('search-button');
     const noResultsDiv = document.getElementById('no-results');
     const checklistTabs = document.getElementById('checklist-tabs');
     const checklistContent = document.getElementById('checklist-content');
     const paginationContainer = document.getElementById('pagination-container');
+    const hotKeywordsContainer = document.getElementById('hot-keywords-container');
+    const megaMenuNav = document.getElementById('mega-menu-nav');
+    const megaMenuPanesContainer = document.getElementById('mega-menu-panes-container');
+    const contentTypeFilter = document.getElementById('content-type-filter');
+
 
     const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwEt2gRcaihTRVMzntDpwpM0yyfAJAYCgQmimbX9mGhZfFZr6NLO9qdEiVTVDTLeRLttw/exec';
 
     let allArticleData = [];
     let allChecklistData = {};
     let currentPage = 1;
+    let activeContentType = 'all'; // 'all', 'article', 'resource'
     const articlesPerPage = 12;
+
+    const semesterTagToTabId = {
+        '開學': 'start-school',
+        '期中': 'mid-term',
+        '期末': 'finals',
+        '寒暑假': 'vacation',
+        '國中會考': 'cap-exam'
+    };
+    const semesterTags = Object.keys(semesterTagToTabId);
+
+    const menuData = [
+        {
+            title: '教育實務',
+            tags: ['班級經營', '親師溝通', '輔導管教', '校園法規', '學校行政', '台灣現場', '教育趨勢']
+        },
+        {
+            title: '科目',
+            tags: ['國文領域', '英文領域', '數學領域', '社會領域', '自然領域']
+        },
+        {
+            title: '教學',
+            tags: ['教學設計', '數位／資訊融入教學', 'SEL情緒', 'SDGs', 'PBL', '閱讀理解', '雙語教育', '節慶主題']
+        },
+        {
+            title: '學習',
+            tags: ['學習策略', '思考方法', '寫作技巧', '生涯探索', '公民素養']
+        },
+        {
+            title: '學期行事曆',
+            tags: ['開學', '期中', '期末', '寒暑假', '國中會考']
+        }
+    ];
+
+    /**
+     * Renders the mega menu navigation and its dropdown panes.
+     */
+    function renderMegaMenu() {
+        menuData.forEach((item, index) => {
+            // Create nav item
+            const navItem = document.createElement('button');
+            navItem.className = 'mega-menu-item flex items-center gap-x-1 px-4 py-3 text-base font-semibold text-gray-600';
+            navItem.dataset.index = index;
+            navItem.innerHTML = `
+                <span>${item.title}</span>
+                <svg class="w-4 h-4 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            `;
+            megaMenuNav.appendChild(navItem);
+
+            // Create pane
+            const pane = document.createElement('div');
+            pane.className = 'mega-menu-pane absolute top-full left-0 w-full bg-white shadow-lg p-8';
+            pane.dataset.index = index;
+
+            const tagGrid = document.createElement('div');
+            tagGrid.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 container mx-auto';
+            
+            item.tags.forEach(tag => {
+                const tagButton = document.createElement('button');
+                tagButton.className = 'mega-menu-tag w-full text-left p-3 rounded-lg text-sm';
+                tagButton.textContent = tag;
+                tagGrid.appendChild(tagButton);
+            });
+
+            pane.appendChild(tagGrid);
+            megaMenuPanesContainer.appendChild(pane);
+        });
+    }
+
 
     /**
      * Renders skeleton placeholders while data is loading.
@@ -268,22 +422,6 @@
     }
 
     /**
-     * Populates the keyword filter dropdown with unique keywords from articles.
-     * @param {Array} articles - An array of article objects.
-     */
-    function populateFilter(articles) {
-        const allKeywords = new Set();
-        articles.forEach(article => (article.keywords || []).forEach(kw => allKeywords.add(kw)));
-        filterSelect.innerHTML = '<option value="all">所有標籤</option>';
-        Array.from(allKeywords).sort().forEach(kw => {
-            const option = document.createElement('option');
-            option.value = kw;
-            option.textContent = kw;
-            filterSelect.appendChild(option);
-        });
-    }
-
-    /**
      * Filters and sorts the articles based on the current UI controls.
      * @returns {Array} The filtered and sorted array of articles.
      */
@@ -291,18 +429,21 @@
         const activeTab = checklistTabs.querySelector('.active');
         const activePeriod = activeTab ? activeTab.dataset.tab : 'all';
         const searchTerm = searchInput.value.toLowerCase().trim();
-        const selectedKeyword = filterSelect.value;
 
         let filteredArticles = allArticleData;
+
+        // 1. Filter by content type
+        if (activeContentType === 'article') {
+            // Articles are anything that isn't a 'download' type resource
+            filteredArticles = filteredArticles.filter(article => article.buttonType !== 'download');
+        } else if (activeContentType === 'resource') {
+            filteredArticles = filteredArticles.filter(article => article.buttonType === 'download');
+        }
 
         if (activePeriod !== 'all') {
             filteredArticles = filteredArticles.filter(article => (article.period || '').toLowerCase() === activePeriod);
         }
 
-        if (selectedKeyword !== 'all') {
-            filteredArticles = filteredArticles.filter(article => (article.keywords || []).includes(selectedKeyword));
-        }
-        
         if (searchTerm) {
             filteredArticles = filteredArticles.filter(article => 
                 (article.title || '').toLowerCase().includes(searchTerm) ||
@@ -337,35 +478,28 @@
                 if (scoreA !== scoreB) return scoreB - scoreA;
             }
             
-            // Default sort: by proximity to today's month/day, then by year.
             const today = new Date();
             const oneDay = 1000 * 60 * 60 * 24;
             
             const getDayOfYear = (dateStr) => {
                 const date = new Date(dateStr);
-                // Set year to a fixed non-leap year to get a consistent day number for comparison.
                 date.setFullYear(2001);
                 const startOfFixedYear = new Date(2001, 0, 0);
                 return Math.floor((date - startOfFixedYear) / oneDay);
             };
 
             const todayDayOfYear = getDayOfYear(today.toISOString());
-            
             const dayA = getDayOfYear(a.publishDate);
             const dayB = getDayOfYear(b.publishDate);
-
-            // Calculate distance from today, handling the wrap-around for a circular year
             const distA = Math.abs(dayA - todayDayOfYear);
             const distB = Math.abs(dayB - todayDayOfYear);
-            
             const proximityA = Math.min(distA, 365 - distA);
             const proximityB = Math.min(distB, 365 - distB);
 
             if (proximityA !== proximityB) {
-                return proximityA - proximityB; // Sort by the smallest distance first
+                return proximityA - proximityB;
             }
 
-            // If the proximity is the same, sort by the newest year first
             const yearA = new Date(a.publishDate).getFullYear();
             const yearB = new Date(b.publishDate).getFullYear();
             return yearB - yearA;
@@ -388,22 +522,46 @@
     }
 
     /**
-     * Debounce utility to limit the rate at which a function gets called.
-     * @param {Function} func The function to debounce.
-     * @param {number} delay The delay in milliseconds.
-     * @returns {Function} The debounced function.
+     * Triggers a search and resets to the first page.
      */
-    function debounce(func, delay) {
-        let timeout;
-        return function(...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), delay);
-        };
+    function performSearch(options = {}) {
+        const { isFromSemesterSource = false } = options;
+        const checklistSection = document.getElementById('checklist-section');
+        const searchTerm = searchInput.value.trim();
+
+        const isSemesterKeyword = semesterTags.includes(searchTerm);
+
+        if (isFromSemesterSource || isSemesterKeyword) {
+            checklistSection.style.display = 'block';
+            
+            // Sync the checklist's active tab to match the search term
+            if (isSemesterKeyword) {
+                const tabId = semesterTagToTabId[searchTerm];
+                const activeTab = checklistTabs.querySelector('.active');
+                const targetTab = checklistTabs.querySelector(`[data-tab="${tabId}"]`);
+                if (targetTab && (!activeTab || activeTab.dataset.tab !== tabId)) {
+                    if(activeTab) activeTab.classList.remove('active');
+                    targetTab.classList.add('active');
+                    renderChecklist(tabId);
+                }
+            }
+        } else {
+            checklistSection.style.display = 'none';
+        }
+
+        currentPage = 1;
+        updateDisplay();
+    }
+    
+    function closeAllMegaMenuPanes() {
+        document.querySelectorAll('.mega-menu-pane.active').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.mega-menu-item.active').forEach(i => i.classList.remove('active'));
     }
 
     // Main application logic starts here
     document.addEventListener('DOMContentLoaded', () => {
         renderSkeletons(12);
+        renderMegaMenu();
 
         const checklistProgressBar = document.getElementById('checklist-progress-bar');
         const checklistProgressText = document.getElementById('checklist-progress-text');
@@ -432,31 +590,35 @@
                     allArticleData = data.articles || [];
                     allChecklistData = data.checklists || {};
                     
-                    populateFilter(allArticleData);
                     renderChecklist('all'); 
                     currentPage = 1;
                     updateDisplay(); 
 
-                    // Setup event listeners
+                    // --- Event Listeners ---
                     checklistTabs.addEventListener('click', (e) => {
                         if (e.target.matches('.tab-button')) {
                             checklistTabs.querySelector('.active').classList.remove('active');
                             e.target.classList.add('active');
                             renderChecklist(e.target.dataset.tab);
-                            currentPage = 1;
-                            updateDisplay();
+                            performSearch({ isFromSemesterSource: true });
+                        }
+                    });
+                    
+                    searchButton.addEventListener('click', performSearch);
+                    searchInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            performSearch();
                         }
                     });
 
-                    const debouncedUpdate = debounce(() => {
-                        currentPage = 1;
-                        updateDisplay();
-                    }, 300);
-                    searchInput.addEventListener('input', debouncedUpdate);
-
-                    filterSelect.addEventListener('change', () => {
-                        currentPage = 1;
-                        updateDisplay();
+                    contentTypeFilter.addEventListener('click', (e) => {
+                        if (e.target.matches('.content-filter-button')) {
+                            contentTypeFilter.querySelector('.active').classList.remove('active');
+                            e.target.classList.add('active');
+                            activeContentType = e.target.dataset.type;
+                            currentPage = 1; // Reset page on filter change
+                            updateDisplay();
+                        }
                     });
 
                     paginationContainer.addEventListener('click', (e) => {
@@ -469,19 +631,59 @@
                         cardContainer.scrollIntoView({ behavior: 'smooth' });
                     });
 
-                    // Add event listener for keyword tags
                     cardContainer.addEventListener('click', (e) => {
                         const keywordTag = e.target.closest('button.keyword-tag');
                         if (!keywordTag) return;
-
                         const keyword = keywordTag.dataset.keyword;
-                        if (keyword && filterSelect.value !== keyword) {
-                            filterSelect.value = keyword;
-                            currentPage = 1;
-                            updateDisplay();
-                            document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
+                        if (keyword) {
+                            searchInput.value = keyword;
+                            performSearch();
+                            document.querySelector('header').scrollIntoView({ behavior: 'smooth' });
                         }
                     });
+
+                    if (hotKeywordsContainer) {
+                        hotKeywordsContainer.addEventListener('click', (e) => {
+                            if (e.target.matches('.hot-keyword-tag')) {
+                                const keyword = e.target.textContent.trim();
+                                searchInput.value = keyword;
+                                performSearch();
+                            }
+                        });
+                    }
+
+                    // Mega Menu Listeners
+                    megaMenuNav.addEventListener('click', (e) => {
+                        const navItem = e.target.closest('.mega-menu-item');
+                        if (!navItem) return;
+
+                        const index = navItem.dataset.index;
+                        const targetPane = document.querySelector(`.mega-menu-pane[data-index='${index}']`);
+                        const isAlreadyActive = navItem.classList.contains('active');
+
+                        closeAllMegaMenuPanes();
+
+                        if (!isAlreadyActive) {
+                            navItem.classList.add('active');
+                            if (targetPane) targetPane.classList.add('active');
+                        }
+                    });
+
+                    megaMenuPanesContainer.addEventListener('click', (e) => {
+                        const tagButton = e.target.closest('.mega-menu-tag');
+                        if (tagButton) {
+                            searchInput.value = tagButton.textContent.trim();
+                            performSearch();
+                            closeAllMegaMenuPanes();
+                        }
+                    });
+                    
+                    document.addEventListener('click', (e) => {
+                        if (!document.getElementById('mega-menu-container').contains(e.target)) {
+                            closeAllMegaMenuPanes();
+                        }
+                    });
+
                 }, 400); 
             })
             .catch(error => {
