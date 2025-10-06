@@ -104,6 +104,20 @@
             color: #1C2271;
             border-bottom-color: #1C2271;
         }
+        /* Mega Menu Gradient Underline */
+        #mega-menu-nav {
+            position: relative;
+        }
+        #mega-menu-nav::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, #1C2271, #004098);
+            opacity: 0.75;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -139,7 +153,7 @@
     <!-- Mega Menu Section -->
     <div id="mega-menu-container" class="sticky top-0 bg-white shadow-md z-40">
         <!-- Main menu items will be injected here -->
-        <nav id="mega-menu-nav" class="container mx-auto flex justify-center border-b border-gray-200"></nav>
+        <nav id="mega-menu-nav" class="container mx-auto flex justify-center"></nav>
         <!-- Dropdown panes will be injected here -->
         <div id="mega-menu-panes-container" class="relative"></div>
     </div>
@@ -189,7 +203,7 @@
         </div>
         
         <!-- Articles Grid -->
-        <main id="card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <main id="card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <!-- Skeletons or Cards will be rendered here -->
         </main>
 
