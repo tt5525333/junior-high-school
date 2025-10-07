@@ -358,9 +358,14 @@
                 buttonText = '回看影音';
             }
 
+            let summaryText = article.summary || '';
+            if (summaryText.length > 100) {
+                summaryText = summaryText.substring(0, 100) + '...';
+            }
+
             const card = document.createElement('div');
             card.className = 'card fade-in flex flex-col';
-            card.innerHTML = imageBlock + `<div class="p-6 flex flex-col flex-grow"><div class="flex-grow"><h2 class="text-xl font-bold mb-2 text-gray-900">${article.title}</h2><p class="text-gray-600 mb-4 text-sm leading-relaxed">${article.summary}</p></div><div class="pt-4 mt-auto"><div class="flex flex-wrap gap-2 mb-4">${keywordsHtml}</div><div class="flex justify-between items-center text-xs text-gray-500"><span>作者：${article.author}</span><span>發布於：${article.publishDate}</span></div><div class="text-right mt-4"><a href="${article.url}" target="_blank" rel="noopener noreferrer" class="inline-block px-4 py-2 bg-[#1C2271] text-white rounded-lg hover:bg-[#004098] transition duration-300 font-semibold">${buttonText}</a></div></div></div>`;
+            card.innerHTML = imageBlock + `<div class="p-6 flex flex-col flex-grow"><div class="flex-grow"><h2 class="text-xl font-bold mb-2 text-gray-900">${article.title}</h2><p class="text-gray-600 mb-4 text-sm leading-relaxed">${summaryText}</p></div><div class="pt-4 mt-auto"><div class="flex flex-wrap gap-2 mb-4">${keywordsHtml}</div><div class="flex justify-between items-center text-xs text-gray-500"><span>作者：${article.author}</span><span>發布於：${article.publishDate}</span></div><div class="text-right mt-4"><a href="${article.url}" target="_blank" rel="noopener noreferrer" class="inline-block px-4 py-2 bg-[#1C2271] text-white rounded-lg hover:bg-[#004098] transition duration-300 font-semibold">${buttonText}</a></div></div></div>`;
 
             card.addEventListener('click', (e) => {
                 if (e.target.closest('a') || e.target.closest('button.keyword-tag')) return;
