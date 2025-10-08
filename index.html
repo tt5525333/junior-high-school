@@ -459,8 +459,9 @@
             filteredArticles = filteredArticles.filter(article => article.buttonType === 'download');
         }
 
-        if (activePeriod !== 'all') {
-            filteredArticles = filteredArticles.filter(article => (article.period || '').toLowerCase() === activePeriod);
+        // Apply semester period filter ONLY if the checklist section is meant to be active
+        if (document.getElementById('checklist-section').style.display === 'block' && activePeriod !== 'all') {
+             filteredArticles = filteredArticles.filter(article => (article.period || '').toLowerCase() === activePeriod);
         }
 
         if (searchTerm) {
@@ -543,26 +544,22 @@
     /**
      * Triggers a search and resets to the first page.
      */
-    function performSearch(options = {}) {
-        const { isFromSemesterSource = false } = options;
+    function performSearch() {
         const checklistSection = document.getElementById('checklist-section');
         const searchTerm = searchInput.value.trim();
-
         const isSemesterKeyword = semesterTags.includes(searchTerm);
 
-        if (isFromSemesterSource || isSemesterKeyword) {
+        if (isSemesterKeyword) {
             checklistSection.style.display = 'block';
             
             // Sync the checklist's active tab to match the search term
-            if (isSemesterKeyword) {
-                const tabId = semesterTagToTabId[searchTerm];
-                const activeTab = checklistTabs.querySelector('.active');
-                const targetTab = checklistTabs.querySelector(`[data-tab="${tabId}"]`);
-                if (targetTab && (!activeTab || activeTab.dataset.tab !== tabId)) {
-                    if(activeTab) activeTab.classList.remove('active');
-                    targetTab.classList.add('active');
-                    renderChecklist(tabId);
-                }
+            const tabId = semesterTagToTabId[searchTerm];
+            const activeTab = checklistTabs.querySelector('.active');
+            const targetTab = checklistTabs.querySelector(`[data-tab="${tabId}"]`);
+            if (targetTab && (!activeTab || activeTab.dataset.tab !== tabId)) {
+                if(activeTab) activeTab.classList.remove('active');
+                targetTab.classList.add('active');
+                renderChecklist(tabId);
             }
         } else {
             checklistSection.style.display = 'none';
@@ -616,10 +613,22 @@
                     // --- Event Listeners ---
                     checklistTabs.addEventListener('click', (e) => {
                         if (e.target.matches('.tab-button')) {
-                            checklistTabs.querySelector('.active').classList.remove('active');
+                            const currentActive = checklistTabs.querySelector('.active');
+                            if(currentActive) currentActive.classList.remove('active');
                             e.target.classList.add('active');
                             renderChecklist(e.target.dataset.tab);
-                            performSearch({ isFromSemesterSource: true });
+
+                            // Also update search if the tab corresponds to a keyword
+                            const tabKeyword = semesterTags.find(tag => semesterTagToTabId[tag] === e.target.dataset.tab);
+                            if (tabKeyword) {
+                                searchInput.value = tabKeyword;
+                            } else {
+                                // If "all" is clicked, clear search bar if it contains a semester keyword
+                                if (semesterTags.includes(searchInput.value.trim())) {
+                                    searchInput.value = '';
+                                }
+                            }
+                            performSearch();
                         }
                     });
                     
