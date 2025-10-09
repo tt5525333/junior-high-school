@@ -475,12 +475,19 @@
         }
 
         filteredArticles.sort((a, b) => {
+            // Priority for special sections based on search term or active tab
             if (activePeriod === 'cap-exam') {
                 const aIsSpecial = a.buttonType === 'special_section';
                 const bIsSpecial = b.buttonType === 'special_section';
                 if (aIsSpecial !== bIsSpecial) return bIsSpecial - aIsSpecial;
             }
+            if (searchTerm === '親師溝通') {
+                const aIsSpecial = a.buttonType === 'special_section';
+                const bIsSpecial = b.buttonType === 'special_section';
+                if (aIsSpecial !== bIsSpecial) return bIsSpecial - aIsSpecial;
+            }
 
+            // Priority for search relevance
             if (searchTerm) {
                 const aIsDownload = a.buttonType === 'download';
                 const bIsDownload = b.buttonType === 'download';
@@ -498,12 +505,13 @@
                 if (scoreA !== scoreB) return scoreB - scoreA;
             }
             
+            // Default sort: proximity to today's date, then by year
             const today = new Date();
             const oneDay = 1000 * 60 * 60 * 24;
             
             const getDayOfYear = (dateStr) => {
                 const date = new Date(dateStr);
-                date.setFullYear(2001);
+                date.setFullYear(2001); // Use a non-leap year for consistency
                 const startOfFixedYear = new Date(2001, 0, 0);
                 return Math.floor((date - startOfFixedYear) / oneDay);
             };
@@ -511,10 +519,13 @@
             const todayDayOfYear = getDayOfYear(today.toISOString());
             const dayA = getDayOfYear(a.publishDate);
             const dayB = getDayOfYear(b.publishDate);
+            
             const distA = Math.abs(dayA - todayDayOfYear);
             const distB = Math.abs(dayB - todayDayOfYear);
-            const proximityA = Math.min(distA, 365 - distA);
-            const proximityB = Math.min(distB, 365 - distB);
+
+            // Handle year wrap around for proximity
+            const proximityA = Math.min(distA, 366 - distA);
+            const proximityB = Math.min(distB, 366 - distB);
 
             if (proximityA !== proximityB) {
                 return proximityA - proximityB;
@@ -618,12 +629,10 @@
                             e.target.classList.add('active');
                             renderChecklist(e.target.dataset.tab);
 
-                            // Also update search if the tab corresponds to a keyword
                             const tabKeyword = semesterTags.find(tag => semesterTagToTabId[tag] === e.target.dataset.tab);
                             if (tabKeyword) {
                                 searchInput.value = tabKeyword;
                             } else {
-                                // If "all" is clicked, clear search bar if it contains a semester keyword
                                 if (semesterTags.includes(searchInput.value.trim())) {
                                     searchInput.value = '';
                                 }
